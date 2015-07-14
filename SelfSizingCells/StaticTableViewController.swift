@@ -17,7 +17,6 @@ class StaticTableViewController: UITableViewController {
     @IBOutlet weak var pickerButton: UIButton!
     @IBOutlet weak var datePickerCell: UITableViewCell!
     @IBOutlet weak var pickerCell: UITableViewCell!
-    //    @IBOutlet var datePickerHeightConstraint: NSLayoutConstraint!
     
     var datePickerHidden = true {
         didSet {
