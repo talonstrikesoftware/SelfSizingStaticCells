@@ -2,7 +2,7 @@
 //  SelfSizingCellsTests.swift
 //  SelfSizingCellsTests
 //
-//  Created by Mark Astin on 7/8/15.
+//  Created on 7/8/15.
 //  Copyright (c) 2015 Talon Strike Software. All rights reserved.
 //
 

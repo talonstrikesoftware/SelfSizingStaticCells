@@ -2,7 +2,7 @@
 //  StaticTableViewController.swift
 //  SelfSizingCells
 //
-//  Created by Mark Astin on 7/8/15.
+//  Created on 7/8/15.
 //  Copyright (c) 2015 Talon Strike Software. All rights reserved.
 //
 
@@ -15,9 +15,14 @@ class StaticTableViewController: UITableViewController {
     
     @IBOutlet weak var datePickerButton: UIButton!
     @IBOutlet weak var pickerButton: UIButton!
+    
+    // Hold a reference to the cells we want to control
     @IBOutlet weak var datePickerCell: UITableViewCell!
     @IBOutlet weak var pickerCell: UITableViewCell!
     
+    // Flag to indicate whether the date picker row is hidden or not
+    // In the didSet method we update the title of the datePickerButton to represent
+    // the current state
     var datePickerHidden = true {
         didSet {
             if (!datePickerHidden) {
@@ -29,6 +34,9 @@ class StaticTableViewController: UITableViewController {
         }
     }
     
+    // Flag to indicate whether the picker row is hidden or not
+    // In the didSet method we update the title of the pickerButton to represent
+    // the current state
     var pickerHidden = false {
         didSet {
             if (!pickerHidden) {
@@ -40,77 +48,70 @@ class StaticTableViewController: UITableViewController {
         }
     }
     
+    // Some items for our picker control
     var items = ["Item 1", "Item 2", "Item 3"]
     
-    @IBAction func toggleDatePicker(sender: AnyObject) {
-        datePickerHidden = !datePickerHidden
-        //        updateUI()
-        if (datePickerHidden) {
+    /**
+    Toggles the visibility of a cell
+    
+    - Parameter hidden set to true if the cell should be hidden or false if it should be shown
+    - Parameter view The view component in the cell, will have it's alpha value toggled depending on whether the cell is being shown or hidden
+    - Parameter cell The cell to hide/show
+    */
+    func toggleRow(hidden:Bool, view:UIView, cell:UITableViewCell) {
+        if (hidden) {
             UIView.animateWithDuration(0.25, animations: { () -> Void in
                 // Hide the picker
-                self.datePicker.alpha = 0
+                view.alpha = 0
                 }, completion: { (success) -> Void in
                     UIView.animateWithDuration(0.5, animations: { () -> Void in
-                        self.datePickerCell.frame.size.height = 0
+                        // Now collapse the cell
+                        cell.frame.size.height = 0
                         self.tableView.beginUpdates()
                         self.tableView.endUpdates()
-                    }, completion: { (success) -> Void in
-                        self.datePickerCell.hidden = true
+                        }, completion: { (success) -> Void in
+                            cell.hidden = true
                     })
             })
         }
         else {
             UIView.animateWithDuration(0.5, animations: { () -> Void in
-                self.datePickerCell.hidden = false
+                // unhide the cell
+                cell.hidden = false
                 self.tableView.beginUpdates()
                 self.tableView.endUpdates()
                 }, completion: { (success) -> Void in
                     UIView.animateWithDuration(0.25, animations: { () -> Void in
-                        self.datePicker.alpha = 1
+                        // show the cell's contents
+                        view.alpha = 1
                     })
             })
         }
     }
-    
-    @IBAction func togglePicker(sender: AnyObject) {
-        pickerHidden = !pickerHidden
-        if (pickerHidden) {
-            UIView.animateWithDuration(2.0, animations: { () -> Void in
-                // Hide the picker
-                self.picker.alpha = 0
-                }, completion: { (success) -> Void in
-                    UIView.animateWithDuration(1.0) { () -> Void in
-                        // Animate table changes
-                        self.pickerCell.hidden = true
-                        
-                        self.tableView.beginUpdates()
-                        self.tableView.endUpdates()
-                    }
-            })
-        }
-        else {
-            UIView.animateWithDuration(1.0, animations: { () -> Void in
-                // Animate table changes
-                self.pickerCell.hidden = false
-                self.tableView.beginUpdates()
-                self.tableView.endUpdates()
-                }, completion: { (success) -> Void in
-                    UIView.animateWithDuration(2.0) { () -> Void in
-                        // show the date picker
-                        self.picker.alpha = 1
-                    }
-            })
-        }
-//
-//        updateUI()
-//        UIView.animateWithDuration(2.0) { () -> Void in
-//            self.picker.alpha = self.pickerHidden ? 0 : 1
-//            self.tableView.beginUpdates()
-//            self.tableView.endUpdates()
-//        }
 
+    /**
+        Toggles the date picker row from it's current state to the next state
+    */
+    @IBAction func toggleDatePicker(sender: AnyObject) {
+        // Set the new hidden state
+        datePickerHidden = !datePickerHidden
+        // Animate the new state
+        toggleRow(datePickerHidden, view: datePicker, cell: datePickerCell)
+    }
+    
+    /**
+        Toggles the picker row from it's current state to the next state
+    */
+    @IBAction func togglePicker(sender: AnyObject) {
+        // Set the new hidden state
+        pickerHidden = !pickerHidden
+        // Animate the new state
+        toggleRow(pickerHidden, view: picker, cell: pickerCell)
     }
 
+    /**
+        Updates the controls in the view
+    */
     func updateUI() {
         datePickerCell.hidden = datePickerHidden
         pickerCell.hidden = pickerHidden
@@ -120,6 +121,10 @@ class StaticTableViewController: UITableViewController {
         datePickerHidden = true
         pickerHidden = false
         datePicker.alpha = 0
+        
+        // This is broken out as in a real app we may want to do other things
+        // besides just hiding the cells.  In this test app this is the only place
+        // this method is called.
         updateUI()
     }
     
@@ -129,6 +134,7 @@ class StaticTableViewController: UITableViewController {
 
     }
 
+    // UITableViewDelegate
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
         if (indexPath.row == 2 && datePickerHidden) {
             return 0
